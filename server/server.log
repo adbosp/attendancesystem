@@ -1,0 +1,7 @@
+
+> attendance-management-system@0.1.0 server
+> node server/server.js
+
+◇ injected env (6) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+MongoDB connected: AttendanceDB
+Server running on http://localhost:5000
