@@ -1,0 +1,2 @@
+C:\Users\HYVN\Documents\Codex\2026-07-01\project-attendance-management-system-basic-setup\outputs\AttendanceControlPanel\AttendanceControlPanel.pdb
+C:\Users\HYVN\Documents\Codex\2026-07-01\project-attendance-management-system-basic-setup\outputs\AttendanceControlPanel\AttendanceControlPanel.exe

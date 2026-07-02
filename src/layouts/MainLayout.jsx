@@ -1,4 +1,4 @@
-import { Box, Toolbar, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Header from '../components/Header.jsx';
@@ -45,6 +45,11 @@ function MainLayout() {
           <Toolbar />
           <Box sx={{ p: { xs: 2, sm: 3, lg: 4 }, maxWidth: 1440, mx: 'auto' }}>
             <Outlet />
+            <Box sx={{ pt: 4, textAlign: 'center' }}>
+              <Typography variant="caption" color="text.secondary">
+                Create by Truong-IT
+              </Typography>
+            </Box>
           </Box>
         </Box>
       </Box>

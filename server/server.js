@@ -215,8 +215,26 @@ for (const shift of defaultShiftSeeds) {
 
 const app = express();
 const port = process.env.PORT || 5000;
+const allowedOrigins = new Set([
+  'http://127.0.0.1:5173',
+  'http://localhost:5173',
+  'http://localhost',
+  'http://127.0.0.1',
+  'http://192.168.1.90',
+  'http://192.168.1.90:5173',
+]);
 
-app.use(cors({ origin: ['http://127.0.0.1:5173', 'http://localhost:5173', 'http://localhost', 'http://127.0.0.1'] }));
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.has(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`Origin ${origin} is not allowed by CORS`));
+  },
+  optionsSuccessStatus: 200,
+}));
 app.use(express.json());
 
 app.get('/', (_req, res) => {
@@ -921,6 +939,6 @@ app.delete('/api/shifts/:id', async (req, res) => {
   return res.json({ message: 'Shift deleted' });
 });
 
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on http://0.0.0.0:${port}`);
 });

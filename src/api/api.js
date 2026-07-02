@@ -1,7 +1,15 @@
 import axios from 'axios';
 
+const getBaseURL = () => {
+  if (typeof window === 'undefined') {
+    return 'http://localhost:5000';
+  }
+
+  return `http://${window.location.hostname}:5000`;
+};
+
 const api = axios.create({
-  baseURL: 'http://localhost:5000',
+  baseURL: getBaseURL(),
   timeout: 8000,
 });
 

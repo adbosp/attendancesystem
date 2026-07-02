@@ -216,8 +216,8 @@ function Shifts() {
       </Grid>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} lg={4}>
-          <Card>
+        <Grid item xs={12} lg={5}>
+          <Card sx={{ maxWidth: { lg: 560 }, mx: { lg: 0 } }}>
             <CardContent>
               <Stack spacing={2.5} component="form" onSubmit={handleSubmit}>
                 <Stack direction="row" spacing={1.5} alignItems="center">
@@ -232,8 +232,20 @@ function Shifts() {
                   </Box>
                 </Stack>
 
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={5}>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: { xs: '1fr', sm: 'minmax(0, 1fr) minmax(0, 1fr)' },
+                    gap: 2,
+                    '& .MuiTextField-root': {
+                      minWidth: 0,
+                    },
+                    '& .MuiInputBase-root': {
+                      minHeight: 56,
+                    },
+                  }}
+                >
+                  <Box>
                     <TextField
                       label="Shift Code"
                       name="shiftCode"
@@ -242,8 +254,8 @@ function Shifts() {
                       fullWidth
                       required
                     />
-                  </Grid>
-                  <Grid item xs={12} sm={7}>
+                  </Box>
+                  <Box>
                     <TextField
                       label="Shift Name"
                       name="shiftName"
@@ -252,11 +264,23 @@ function Shifts() {
                       fullWidth
                       required
                     />
-                  </Grid>
-                </Grid>
+                  </Box>
+                </Box>
 
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: { xs: '1fr', sm: 'minmax(0, 1fr) minmax(0, 1fr)' },
+                    gap: 2,
+                    '& .MuiTextField-root': {
+                      minWidth: 0,
+                    },
+                    '& .MuiInputBase-root': {
+                      minHeight: 56,
+                    },
+                  }}
+                >
+                  <Box>
                     <TextField
                       label="Start Time"
                       name="startTime"
@@ -267,8 +291,8 @@ function Shifts() {
                       required
                       InputLabelProps={{ shrink: true }}
                     />
-                  </Grid>
-                  <Grid item xs={6}>
+                  </Box>
+                  <Box>
                     <TextField
                       label="End Time"
                       name="endTime"
@@ -279,11 +303,23 @@ function Shifts() {
                       required
                       InputLabelProps={{ shrink: true }}
                     />
-                  </Grid>
-                </Grid>
+                  </Box>
+                </Box>
 
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: { xs: '1fr', sm: 'minmax(0, 1fr) minmax(0, 1fr)' },
+                    gap: 2,
+                    '& .MuiTextField-root': {
+                      minWidth: 0,
+                    },
+                    '& .MuiInputBase-root': {
+                      minHeight: 56,
+                    },
+                  }}
+                >
+                  <Box>
                     <TextField
                       label="Allowed Early"
                       name="allowedEarlyMinutes"
@@ -291,9 +327,10 @@ function Shifts() {
                       value={formData.allowedEarlyMinutes}
                       onChange={handleNumberChange}
                       fullWidth
+                      InputLabelProps={{ shrink: true }}
                     />
-                  </Grid>
-                  <Grid item xs={6}>
+                  </Box>
+                  <Box>
                     <TextField
                       label="Allowed Late"
                       name="allowedLateMinutes"
@@ -301,12 +338,22 @@ function Shifts() {
                       value={formData.allowedLateMinutes}
                       onChange={handleNumberChange}
                       fullWidth
+                      InputLabelProps={{ shrink: true }}
                     />
-                  </Grid>
-                </Grid>
+                  </Box>
+                </Box>
 
-                <Stack spacing={1}>
-                  <Stack direction="row" alignItems="center" justifyContent="space-between">
+                <Stack spacing={1} sx={{ pt: 0.5 }}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{
+                      minHeight: 42,
+                      px: 0.5,
+                      borderRadius: 1,
+                    }}
+                  >
                     <Typography variant="body2" fontWeight={700}>
                       Overnight Shift
                     </Typography>
@@ -316,7 +363,16 @@ function Shifts() {
                       onChange={handleBooleanChange}
                     />
                   </Stack>
-                  <Stack direction="row" alignItems="center" justifyContent="space-between">
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{
+                      minHeight: 42,
+                      px: 0.5,
+                      borderRadius: 1,
+                    }}
+                  >
                     <Typography variant="body2" fontWeight={700}>
                       Active
                     </Typography>
@@ -349,7 +405,7 @@ function Shifts() {
           </Card>
         </Grid>
 
-        <Grid item xs={12} lg={8}>
+        <Grid item xs={12} lg={7}>
           <Card>
             <CardContent>
               <Stack spacing={2}>

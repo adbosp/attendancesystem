@@ -2,6 +2,6 @@
 > attendance-management-system@0.1.0 server
 > node server/server.js
 
-◇ injected env (6) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+◇ injected env (6) from .env // tip: ⌘ enable debugging { debug: true }
 MongoDB connected: AttendanceDB
 Server running on http://localhost:5000
