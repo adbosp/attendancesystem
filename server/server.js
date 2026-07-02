@@ -604,6 +604,106 @@ app.post('/api/employees/:id/sync-to-device', async (req, res) => {
   }
 });
 
+app.post('/api/employees/:id/fingerprints', async (req, res) => {
+  const employee = await Employee.findById(req.params.id);
+
+  if (!employee) {
+    return res.status(404).json({ message: 'Employee not found' });
+  }
+
+  const { fingerIndex, fingerName, status = 'pending', templateSize = 0, note = '' } = req.body;
+  const normalizedIndex = Number(fingerIndex);
+
+  if (!Number.isInteger(normalizedIndex) || normalizedIndex < 0 || normalizedIndex > 9) {
+    return res.status(400).json({ message: 'Finger index must be a number from 0 to 9' });
+  }
+
+  if (!fingerName) {
+    return res.status(400).json({ message: 'Finger name is required' });
+  }
+
+  const allowedStatuses = ['pending', 'enrolled', 'needs_sync'];
+
+  if (!allowedStatuses.includes(status)) {
+    return res.status(400).json({ message: 'Invalid fingerprint status' });
+  }
+
+  const existingFingerprint = employee.fingerprints.find(
+    (fingerprint) => fingerprint.fingerIndex === normalizedIndex,
+  );
+  const now = new Date();
+
+  if (existingFingerprint) {
+    existingFingerprint.fingerName = fingerName;
+    existingFingerprint.status = status;
+    existingFingerprint.templateSize = Number(templateSize || 0);
+    existingFingerprint.note = note;
+
+    if (status === 'enrolled' && !existingFingerprint.enrolledAt) {
+      existingFingerprint.enrolledAt = now;
+    }
+  } else {
+    employee.fingerprints.push({
+      fingerIndex: normalizedIndex,
+      fingerName,
+      status,
+      templateSize: Number(templateSize || 0),
+      enrolledAt: status === 'enrolled' ? now : null,
+      note,
+    });
+  }
+
+  await employee.save();
+
+  return res.json({
+    message: 'Fingerprint record saved in system database.',
+    employee,
+  });
+});
+
+app.patch('/api/employees/:id/fingerprints/:fingerIndex/sync-status', async (req, res) => {
+  const employee = await Employee.findById(req.params.id);
+
+  if (!employee) {
+    return res.status(404).json({ message: 'Employee not found' });
+  }
+
+  const normalizedIndex = Number(req.params.fingerIndex);
+  const fingerprint = employee.fingerprints.find((item) => item.fingerIndex === normalizedIndex);
+
+  if (!fingerprint) {
+    return res.status(404).json({ message: 'Fingerprint record not found' });
+  }
+
+  fingerprint.status = 'enrolled';
+  fingerprint.syncedAt = new Date();
+  await employee.save();
+
+  return res.json({
+    message: 'Fingerprint marked as synced. Device enrollment command can be connected here later.',
+    employee,
+  });
+});
+
+app.delete('/api/employees/:id/fingerprints/:fingerIndex', async (req, res) => {
+  const employee = await Employee.findById(req.params.id);
+
+  if (!employee) {
+    return res.status(404).json({ message: 'Employee not found' });
+  }
+
+  const normalizedIndex = Number(req.params.fingerIndex);
+  employee.fingerprints = employee.fingerprints.filter(
+    (fingerprint) => fingerprint.fingerIndex !== normalizedIndex,
+  );
+  await employee.save();
+
+  return res.json({
+    message: 'Fingerprint record removed from system database.',
+    employee,
+  });
+});
+
 app.post('/api/devices/:id/test-connection', async (req, res) => {
   const device = await Device.findById(req.params.id);
 
@@ -770,7 +870,7 @@ app.post('/api/attendance/fix-missing', async (req, res) => {
     outputEndDate: toDate ? new Date(`${toDate}T00:00:00`) : undefined,
   });
   const shiftsByCode = new Map(shifts.map((shift) => [shift.shiftCode || shift.code, shift]));
-  const missingRows = summary.filter((row) => row.status === 'missing-out' || !row.out);
+  const missingRows = summary.filter((row) => row.status === 'missing-out');
   const results = [];
 
   for (const row of missingRows) {

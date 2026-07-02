@@ -40,10 +40,20 @@ function MainLayout() {
             flexGrow: 1,
             width: '100%',
             minHeight: '100vh',
+            minWidth: 0,
           }}
         >
           <Toolbar />
-          <Box sx={{ p: { xs: 2, sm: 3, lg: 4 }, maxWidth: 1440, mx: 'auto' }}>
+          <Box
+            sx={{
+              width: '100%',
+              px: { xs: 1.5, sm: 3, lg: 4 },
+              py: { xs: 2, sm: 3, lg: 4 },
+              maxWidth: 1440,
+              mx: 'auto',
+              overflowX: 'hidden',
+            }}
+          >
             <Outlet />
             <Box sx={{ pt: 4, textAlign: 'center' }}>
               <Typography variant="caption" color="text.secondary">

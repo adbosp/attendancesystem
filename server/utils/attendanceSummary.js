@@ -86,6 +86,18 @@ const isInsideOutputRange = (date, startDate, endDate) => {
   return true;
 };
 
+const getOpenSessionStatus = (sessionDate, now = new Date()) => {
+  return startOfDay(sessionDate).getTime() < startOfDay(now).getTime()
+    ? {
+        status: 'missing-out',
+        warning: 'Missing OUT',
+      }
+    : {
+        status: 'pending-out',
+        warning: 'Waiting for OUT',
+      };
+};
+
 export const buildAttendanceSummary = ({
   logs,
   shifts,
@@ -164,7 +176,8 @@ export const buildAttendanceSummary = ({
     const firstLog = matchingLogs[0];
     const lastLog = matchingLogs[matchingLogs.length - 1];
     const hasOut = matchingLogs.length > 1;
-    const status = hasOut ? 'complete' : 'missing-out';
+    const openSessionStatus = hasOut ? { status: 'complete', warning: '' } : getOpenSessionStatus(selected.day);
+    const status = openSessionStatus.status;
     const totalMinutes = hasOut ? calculateMinutes(firstLog.dateValue, lastLog.dateValue) : 0;
 
     sessions.push({
@@ -185,7 +198,7 @@ export const buildAttendanceSummary = ({
       sourceDeviceName: firstLog.sourceDeviceName,
       logCount: matchingLogs.length,
       status,
-      warning: hasOut ? '' : 'Missing OUT',
+      warning: openSessionStatus.warning,
     });
   }
 

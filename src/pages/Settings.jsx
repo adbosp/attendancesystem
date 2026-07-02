@@ -62,6 +62,26 @@ const defaultDevice = {
   isActive: true,
 };
 
+const twoColumnFieldsSx = {
+  display: 'grid',
+  gridTemplateColumns: {
+    xs: '1fr',
+    sm: 'minmax(0, 1fr) minmax(0, 1fr)',
+  },
+  gap: 2,
+  alignItems: 'start',
+};
+
+const ipPortFieldsSx = {
+  display: 'grid',
+  gridTemplateColumns: {
+    xs: '1fr',
+    sm: 'minmax(0, 1.35fr) minmax(0, 0.95fr)',
+  },
+  gap: 2,
+  alignItems: 'start',
+};
+
 function Settings() {
   const { devices, loading, error, stats, refreshDevices } = useDevices({ pollingInterval: 5000 });
   const [formData, setFormData] = useState(defaultDevice);
@@ -199,29 +219,30 @@ function Settings() {
             <Card>
               <CardContent>
                 <Stack spacing={3} component="form" onSubmit={handleSubmit}>
-                <Stack direction="row" alignItems="center" spacing={1.5}>
-                  <Box
-                    sx={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: 1,
-                      display: 'grid',
-                      placeItems: 'center',
-                      color: 'primary.main',
-                      bgcolor: 'rgba(37, 99, 235, 0.1)',
-                    }}
-                  >
-                    <SettingsInputAntennaIcon />
-                  </Box>
-                  <Box>
-                    <Typography variant="h6">
-                      {editingId ? 'Edit Device' : 'Add ZKTeco Device'}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Default port for ZKTeco TCP/IP devices is 4370.
-                    </Typography>
-                  </Box>
-                </Stack>
+                  <Stack direction="row" alignItems="center" spacing={1.5}>
+                    <Box
+                      sx={{
+                        width: 44,
+                        height: 44,
+                        flex: '0 0 44px',
+                        borderRadius: 1,
+                        display: 'grid',
+                        placeItems: 'center',
+                        color: 'primary.main',
+                        bgcolor: 'rgba(37, 99, 235, 0.1)',
+                      }}
+                    >
+                      <SettingsInputAntennaIcon />
+                    </Box>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography variant="h6">
+                        {editingId ? 'Edit Device' : 'Add ZKTeco Device'}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Default port for ZKTeco TCP/IP devices is 4370.
+                      </Typography>
+                    </Box>
+                  </Stack>
 
                 <TextField
                   label="Device Name"
@@ -232,8 +253,7 @@ function Settings() {
                   required
                 />
 
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
+                <Box sx={twoColumnFieldsSx}>
                     <TextField
                       label="Brand"
                       name="brand"
@@ -242,8 +262,6 @@ function Settings() {
                       fullWidth
                       required
                     />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
                     <FormControl fullWidth required>
                       <InputLabel>Model</InputLabel>
                       <Select
@@ -259,11 +277,9 @@ function Settings() {
                         ))}
                       </Select>
                     </FormControl>
-                  </Grid>
-                </Grid>
+                </Box>
 
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={7}>
+                <Box sx={ipPortFieldsSx}>
                     <TextField
                       label="IP Address"
                       name="ipAddress"
@@ -273,8 +289,6 @@ function Settings() {
                       fullWidth
                       required
                     />
-                  </Grid>
-                  <Grid item xs={12} sm={5}>
                     <TextField
                       label="Port"
                       name="port"
@@ -285,11 +299,9 @@ function Settings() {
                       required
                       inputProps={{ min: 1, max: 65535 }}
                     />
-                  </Grid>
-                </Grid>
+                </Box>
 
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
+                <Box sx={twoColumnFieldsSx}>
                     <FormControl fullWidth>
                       <InputLabel>Protocol</InputLabel>
                       <Select
@@ -302,8 +314,6 @@ function Settings() {
                         <MenuItem value="UDP">UDP</MenuItem>
                       </Select>
                     </FormControl>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
                     <TextField
                       label="Comm Key"
                       name="commKey"
@@ -311,8 +321,7 @@ function Settings() {
                       onChange={handleChange}
                       fullWidth
                     />
-                  </Grid>
-                </Grid>
+                </Box>
 
                 <TextField
                   label="Location"
@@ -323,7 +332,16 @@ function Settings() {
                   fullWidth
                 />
 
-                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  spacing={2}
+                  sx={{
+                    borderRadius: 1,
+                    px: 0.5,
+                  }}
+                >
                   <Box>
                     <Typography variant="body2" fontWeight={700}>
                       Active Device

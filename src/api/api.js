@@ -78,6 +78,21 @@ export const syncEmployeeToDevice = async (id) => {
   return response.data;
 };
 
+export const saveEmployeeFingerprint = async (id, fingerprint) => {
+  const response = await api.post(`/api/employees/${id}/fingerprints`, fingerprint);
+  return response.data;
+};
+
+export const markEmployeeFingerprintSynced = async (id, fingerIndex) => {
+  const response = await api.patch(`/api/employees/${id}/fingerprints/${fingerIndex}/sync-status`);
+  return response.data;
+};
+
+export const deleteEmployeeFingerprint = async (id, fingerIndex) => {
+  const response = await api.delete(`/api/employees/${id}/fingerprints/${fingerIndex}`);
+  return response.data;
+};
+
 export const getDepartments = async () => {
   const response = await api.get('/api/departments');
   return response.data;

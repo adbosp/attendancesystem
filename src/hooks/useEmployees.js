@@ -15,8 +15,10 @@ function useEmployees({ pollingInterval = 5000 } = {}) {
       const data = await getEmployees();
       setEmployees(data);
       setError('');
+      return data;
     } catch {
       setError('Cannot load employees from server.');
+      return [];
     } finally {
       if (!silent) {
         setLoading(false);

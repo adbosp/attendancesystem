@@ -50,6 +50,46 @@ const employeeSchema = new mongoose.Schema(
       default: '',
       trim: true,
     },
+    fingerprints: {
+      type: [
+        {
+          fingerIndex: {
+            type: Number,
+            required: true,
+            min: 0,
+            max: 9,
+          },
+          fingerName: {
+            type: String,
+            required: true,
+            trim: true,
+          },
+          status: {
+            type: String,
+            enum: ['pending', 'enrolled', 'needs_sync'],
+            default: 'pending',
+          },
+          templateSize: {
+            type: Number,
+            default: 0,
+          },
+          enrolledAt: {
+            type: Date,
+            default: null,
+          },
+          syncedAt: {
+            type: Date,
+            default: null,
+          },
+          note: {
+            type: String,
+            default: '',
+            trim: true,
+          },
+        },
+      ],
+      default: [],
+    },
     sourceDevice: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Device',

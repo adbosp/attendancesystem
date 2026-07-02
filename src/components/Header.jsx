@@ -42,14 +42,14 @@ const headerText = {
   },
   vi: {
     title: 'Hệ Thống Quản Lý Chấm Công',
-    subtitle: 'Bảng Điều Khiển Quản Trị',
+    subtitle: 'Bảng điều khiển quản trị',
     notifications: 'Thông báo',
     markRead: 'Đã đọc',
     noNotifications: 'Hiện không có thông báo.',
-    unread: 'chưa đọc',
-    themeTooltip: 'Đổi giao diện tối/sáng',
+    unread: 'Chưa đọc',
+    themeTooltip: 'Giao Diện Tối/Sáng',
     languageLabel: 'Ngôn ngữ',
-    logout: 'đăng xuất',
+    logout: 'Đăng xuất',
   },
 };
 

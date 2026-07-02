@@ -1,5 +1,6 @@
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditIcon from '@mui/icons-material/Edit';
+import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import GroupsIcon from '@mui/icons-material/Groups';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SaveIcon from '@mui/icons-material/Save';
@@ -14,6 +15,10 @@ import {
   Chip,
   CircularProgress,
   Divider,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
   Grid,
   IconButton,
@@ -38,6 +43,9 @@ import {
   syncEmployeeToDevice,
   syncEmployeesFromDevices,
   updateEmployee,
+  deleteEmployeeFingerprint,
+  markEmployeeFingerprintSynced,
+  saveEmployeeFingerprint,
 } from '../api/api.js';
 import useDevices from '../hooks/useDevices.js';
 import useDepartments from '../hooks/useDepartments.js';
@@ -55,6 +63,26 @@ const defaultForm = {
   password: '',
   sourceDevice: '',
   isActive: true,
+};
+
+const fingerOptions = [
+  { value: 0, label: 'Ngón út trái' },
+  { value: 1, label: 'Ngón áp út trái' },
+  { value: 2, label: 'Ngón giữa trái' },
+  { value: 3, label: 'Ngón trỏ trái' },
+  { value: 4, label: 'Ngón cái trái' },
+  { value: 5, label: 'Ngón cái phải' },
+  { value: 6, label: 'Ngón trỏ phải' },
+  { value: 7, label: 'Ngón giữa phải' },
+  { value: 8, label: 'Ngón áp út phải' },
+  { value: 9, label: 'Ngón út phải' },
+];
+
+const defaultFingerprintForm = {
+  fingerIndex: 6,
+  status: 'pending',
+  templateSize: '',
+  note: '',
 };
 
 function formatDate(value) {
@@ -78,6 +106,9 @@ function Employees() {
   const [syncing, setSyncing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [pushingId, setPushingId] = useState(null);
+  const [fingerprintEmployee, setFingerprintEmployee] = useState(null);
+  const [fingerprintForm, setFingerprintForm] = useState(defaultFingerprintForm);
+  const [savingFingerprint, setSavingFingerprint] = useState(false);
   const [message, setMessage] = useState(null);
 
   const activeDevices = useMemo(() => devices.filter((device) => device.isActive), [devices]);
@@ -122,6 +153,11 @@ function Employees() {
 
   const cardCount = useMemo(
     () => employees.filter((employee) => employee.cardNumber).length,
+    [employees],
+  );
+
+  const fingerprintCount = useMemo(
+    () => employees.reduce((total, employee) => total + (employee.fingerprints?.length || 0), 0),
     [employees],
   );
 
@@ -259,6 +295,107 @@ function Employees() {
     }
   };
 
+  const openFingerprintDialog = (employee) => {
+    setFingerprintEmployee(employee);
+    setFingerprintForm(defaultFingerprintForm);
+    setMessage(null);
+  };
+
+  const closeFingerprintDialog = () => {
+    setFingerprintEmployee(null);
+    setFingerprintForm(defaultFingerprintForm);
+    setSavingFingerprint(false);
+  };
+
+  const handleFingerprintFormChange = (event) => {
+    const { name, value } = event.target;
+    setFingerprintForm((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  };
+
+  const handleSaveFingerprint = async (event) => {
+    event.preventDefault();
+
+    if (!fingerprintEmployee) {
+      return;
+    }
+
+    const finger = fingerOptions.find((option) => option.value === Number(fingerprintForm.fingerIndex));
+    setSavingFingerprint(true);
+    setMessage(null);
+
+    try {
+      const result = await saveEmployeeFingerprint(fingerprintEmployee._id, {
+        ...fingerprintForm,
+        fingerIndex: Number(fingerprintForm.fingerIndex),
+        fingerName: finger?.label || `Finger ${fingerprintForm.fingerIndex}`,
+        templateSize: fingerprintForm.templateSize === '' ? 0 : Number(fingerprintForm.templateSize),
+      });
+
+      const updatedEmployees = await refreshEmployees({ silent: true });
+      setMessage({ severity: 'success', text: result.message });
+      const updatedEmployee = updatedEmployees?.find?.((employee) => employee._id === fingerprintEmployee._id);
+      if (updatedEmployee) {
+        setFingerprintEmployee(updatedEmployee);
+      }
+    } catch (apiError) {
+      setMessage({
+        severity: 'error',
+        text: apiError.response?.data?.message || 'Cannot save fingerprint.',
+      });
+    } finally {
+      setSavingFingerprint(false);
+    }
+  };
+
+  const handleMarkFingerprintSynced = async (fingerIndex) => {
+    if (!fingerprintEmployee) {
+      return;
+    }
+
+    setSavingFingerprint(true);
+    setMessage(null);
+
+    try {
+      const result = await markEmployeeFingerprintSynced(fingerprintEmployee._id, fingerIndex);
+      setMessage({ severity: 'success', text: result.message });
+      await refreshEmployees({ silent: true });
+      setFingerprintEmployee(result.employee);
+    } catch (apiError) {
+      setMessage({
+        severity: 'error',
+        text: apiError.response?.data?.message || 'Cannot update fingerprint sync status.',
+      });
+    } finally {
+      setSavingFingerprint(false);
+    }
+  };
+
+  const handleDeleteFingerprint = async (fingerIndex) => {
+    if (!fingerprintEmployee) {
+      return;
+    }
+
+    setSavingFingerprint(true);
+    setMessage(null);
+
+    try {
+      const result = await deleteEmployeeFingerprint(fingerprintEmployee._id, fingerIndex);
+      setMessage({ severity: 'warning', text: result.message });
+      await refreshEmployees({ silent: true });
+      setFingerprintEmployee(result.employee);
+    } catch (apiError) {
+      setMessage({
+        severity: 'error',
+        text: apiError.response?.data?.message || 'Cannot delete fingerprint.',
+      });
+    } finally {
+      setSavingFingerprint(false);
+    }
+  };
+
   return (
     <Stack spacing={3}>
       <Stack
@@ -327,10 +464,10 @@ function Employees() {
           <Card>
             <CardContent>
               <Typography variant="body2" color="text.secondary">
-                Device Groups
+                Fingerprints
               </Typography>
               <Typography variant="h4" sx={{ mt: 1 }}>
-                {employeesByDevice.length}
+                {fingerprintCount}
               </Typography>
             </CardContent>
           </Card>
@@ -553,6 +690,7 @@ function Employees() {
                               <TableCell>Device Name</TableCell>
                               <TableCell>Department</TableCell>
                               <TableCell>Card</TableCell>
+                              <TableCell>Fingerprint</TableCell>
                               <TableCell>UID</TableCell>
                               <TableCell>Last Synced</TableCell>
                               <TableCell align="right">Actions</TableCell>
@@ -568,6 +706,14 @@ function Employees() {
                                 <TableCell>{employee.name}</TableCell>
                                 <TableCell>{employee.departmentName || 'Unassigned'}</TableCell>
                                 <TableCell>{employee.cardNumber || 'Not set'}</TableCell>
+                                <TableCell>
+                                  <Chip
+                                    size="small"
+                                    icon={<FingerprintIcon />}
+                                    label={`${employee.fingerprints?.length || 0}/10`}
+                                    color={employee.fingerprints?.length ? 'success' : 'default'}
+                                  />
+                                </TableCell>
                                 <TableCell>{employee.uid ?? '-'}</TableCell>
                                 <TableCell>{formatDate(employee.lastSyncedAt)}</TableCell>
                                 <TableCell align="right">
@@ -583,6 +729,14 @@ function Employees() {
                                       disabled={pushingId === employee._id}
                                     >
                                       <UploadIcon />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Tooltip title="Manage fingerprints">
+                                    <IconButton
+                                      color="secondary"
+                                      onClick={() => openFingerprintDialog(employee)}
+                                    >
+                                      <FingerprintIcon />
                                     </IconButton>
                                   </Tooltip>
                                   <Tooltip title="Delete from system">
@@ -607,6 +761,180 @@ function Employees() {
           </Card>
         </Grid>
       </Grid>
+
+      <Dialog
+        open={Boolean(fingerprintEmployee)}
+        onClose={closeFingerprintDialog}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle>
+          <Stack direction="row" spacing={1.5} alignItems="center">
+            <FingerprintIcon color="primary" />
+            <Box>
+              <Typography variant="h6">Gắn vân tay nhân viên</Typography>
+              <Typography variant="body2" color="text.secondary">
+                {fingerprintEmployee?.employeeCode} - {fingerprintEmployee?.displayName || fingerprintEmployee?.name}
+              </Typography>
+            </Box>
+          </Stack>
+        </DialogTitle>
+        <DialogContent dividers>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={5}>
+              <Stack spacing={2} component="form" id="fingerprint-form" onSubmit={handleSaveFingerprint}>
+                <FormControl fullWidth>
+                  <InputLabel>Ngón tay</InputLabel>
+                  <Select
+                    label="Ngón tay"
+                    name="fingerIndex"
+                    value={fingerprintForm.fingerIndex}
+                    onChange={handleFingerprintFormChange}
+                  >
+                    {fingerOptions.map((finger) => (
+                      <MenuItem key={finger.value} value={finger.value}>
+                        {finger.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth>
+                  <InputLabel>Trạng thái</InputLabel>
+                  <Select
+                    label="Trạng thái"
+                    name="status"
+                    value={fingerprintForm.status}
+                    onChange={handleFingerprintFormChange}
+                  >
+                    <MenuItem value="pending">Chờ đăng ký trên máy</MenuItem>
+                    <MenuItem value="enrolled">Đã có vân tay</MenuItem>
+                    <MenuItem value="needs_sync">Cần đồng bộ</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <TextField
+                  label="Dung lượng template"
+                  name="templateSize"
+                  type="number"
+                  value={fingerprintForm.templateSize}
+                  onChange={handleFingerprintFormChange}
+                  fullWidth
+                  helperText="Có thể để trống nếu chưa đọc template từ thiết bị."
+                />
+
+                <TextField
+                  label="Ghi chú"
+                  name="note"
+                  value={fingerprintForm.note}
+                  onChange={handleFingerprintFormChange}
+                  fullWidth
+                  multiline
+                  minRows={3}
+                />
+
+                <Alert severity="info">
+                  Hiện tại hệ thống lưu thông tin gắn vân tay trong MongoDB. Lệnh enroll template trực tiếp xuống ZKTeco sẽ nối ở bước tích hợp SDK thiết bị.
+                </Alert>
+              </Stack>
+            </Grid>
+
+            <Grid item xs={12} md={7}>
+              <Stack spacing={1.5}>
+                <Typography variant="subtitle1" fontWeight={700}>
+                  Danh sách vân tay đã gắn
+                </Typography>
+                {fingerprintEmployee?.fingerprints?.length ? (
+                  fingerprintEmployee.fingerprints
+                    .slice()
+                    .sort((a, b) => a.fingerIndex - b.fingerIndex)
+                    .map((fingerprint) => (
+                      <Card key={fingerprint.fingerIndex} variant="outlined">
+                        <CardContent>
+                          <Stack
+                            direction={{ xs: 'column', sm: 'row' }}
+                            justifyContent="space-between"
+                            alignItems={{ xs: 'flex-start', sm: 'center' }}
+                            spacing={1.5}
+                          >
+                            <Box>
+                              <Typography fontWeight={700}>
+                                {fingerprint.fingerName}
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary">
+                                Slot {fingerprint.fingerIndex} - Template {fingerprint.templateSize || 0} bytes
+                              </Typography>
+                              {fingerprint.note && (
+                                <Typography variant="body2" sx={{ mt: 0.5 }}>
+                                  {fingerprint.note}
+                                </Typography>
+                              )}
+                            </Box>
+                            <Stack direction="row" spacing={1} alignItems="center">
+                              <Chip
+                                size="small"
+                                label={
+                                  fingerprint.status === 'enrolled'
+                                    ? 'Đã đăng ký'
+                                    : fingerprint.status === 'needs_sync'
+                                      ? 'Cần đồng bộ'
+                                      : 'Chờ đăng ký'
+                                }
+                                color={
+                                  fingerprint.status === 'enrolled'
+                                    ? 'success'
+                                    : fingerprint.status === 'needs_sync'
+                                      ? 'warning'
+                                      : 'default'
+                                }
+                              />
+                              <Tooltip title="Đánh dấu đã đồng bộ">
+                                <span>
+                                  <IconButton
+                                    color="primary"
+                                    disabled={savingFingerprint}
+                                    onClick={() => handleMarkFingerprintSynced(fingerprint.fingerIndex)}
+                                  >
+                                    <SyncIcon />
+                                  </IconButton>
+                                </span>
+                              </Tooltip>
+                              <Tooltip title="Xóa vân tay">
+                                <span>
+                                  <IconButton
+                                    color="error"
+                                    disabled={savingFingerprint}
+                                    onClick={() => handleDeleteFingerprint(fingerprint.fingerIndex)}
+                                  >
+                                    <DeleteOutlineIcon />
+                                  </IconButton>
+                                </span>
+                              </Tooltip>
+                            </Stack>
+                          </Stack>
+                        </CardContent>
+                      </Card>
+                    ))
+                ) : (
+                  <Alert severity="warning">Nhân viên này chưa gắn vân tay.</Alert>
+                )}
+              </Stack>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeFingerprintDialog}>Đóng</Button>
+          <Button
+            type="submit"
+            form="fingerprint-form"
+            variant="contained"
+            startIcon={<SaveIcon />}
+            disabled={savingFingerprint}
+          >
+            {savingFingerprint ? 'Đang lưu...' : 'Lưu vân tay'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Stack>
   );
 }
