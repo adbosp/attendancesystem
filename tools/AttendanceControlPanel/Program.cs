@@ -37,6 +37,7 @@ public sealed class ControlPanelForm : Form
     public ControlPanelForm()
     {
         Text = "Attendance System Control";
+        Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
         StartPosition = FormStartPosition.CenterScreen;
         MinimumSize = new Size(760, 520);
         Size = new Size(820, 560);
@@ -83,18 +84,9 @@ public sealed class ControlPanelForm : Form
             AutoSize = true,
             Margin = new Padding(0, 0, 0, 2),
         };
-        var createdBy = new Label
-        {
-            Text = "Create by Truong-IT",
-            ForeColor = Color.FromArgb(37, 99, 235),
-            Font = new Font("Segoe UI", 10, FontStyle.Bold),
-            AutoSize = true,
-            Margin = new Padding(0, 0, 0, 18),
-        };
         var header = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, AutoSize = true, Dock = DockStyle.Top };
         header.Controls.Add(title);
         header.Controls.Add(subtitle);
-        header.Controls.Add(createdBy);
 
         var statusGrid = new TableLayoutPanel
         {

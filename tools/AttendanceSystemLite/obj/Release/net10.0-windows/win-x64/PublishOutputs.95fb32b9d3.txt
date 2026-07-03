@@ -1,0 +1,7 @@
+C:\Users\HYVN\Documents\Codex\2026-07-01\project-attendance-management-system-basic-setup\outputs\AttendanceSystemLite-nocredit\AttendanceSystemLite.pdb
+C:\Users\HYVN\Documents\Codex\2026-07-01\project-attendance-management-system-basic-setup\outputs\AttendanceSystemLite-nocredit\runtimes\win-x64\native\WebView2Loader.dll
+C:\Users\HYVN\Documents\Codex\2026-07-01\project-attendance-management-system-basic-setup\outputs\AttendanceSystemLite-nocredit\WebView2Loader.dll
+C:\Users\HYVN\Documents\Codex\2026-07-01\project-attendance-management-system-basic-setup\outputs\AttendanceSystemLite-nocredit\Microsoft.Web.WebView2.Core.xml
+C:\Users\HYVN\Documents\Codex\2026-07-01\project-attendance-management-system-basic-setup\outputs\AttendanceSystemLite-nocredit\Microsoft.Web.WebView2.WinForms.xml
+C:\Users\HYVN\Documents\Codex\2026-07-01\project-attendance-management-system-basic-setup\outputs\AttendanceSystemLite-nocredit\Microsoft.Web.WebView2.Wpf.xml
+C:\Users\HYVN\Documents\Codex\2026-07-01\project-attendance-management-system-basic-setup\outputs\AttendanceSystemLite-nocredit\AttendanceSystemLite.exe

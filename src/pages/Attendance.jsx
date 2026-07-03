@@ -28,7 +28,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { fixMissingAttendance, syncAttendanceFromDevices } from '../api/api.js';
 import useAttendance from '../hooks/useAttendance.js';
 import useDepartments from '../hooks/useDepartments.js';
@@ -37,6 +37,29 @@ import { NOTIFICATION_EVENT } from '../notifications/notificationSettings.js';
 
 const today = new Date().toISOString().slice(0, 10);
 
+const attendanceFilterGridSx = {
+  display: 'grid',
+  gridTemplateColumns: {
+    xs: '1fr',
+    sm: 'repeat(2, minmax(0, 1fr))',
+    lg: 'repeat(4, minmax(0, 1fr))',
+  },
+  gap: 3,
+  width: '100%',
+  alignItems: 'start',
+};
+
+const attendanceCardGridSx = {
+  display: 'grid',
+  gridTemplateColumns: {
+    xs: '1fr',
+    sm: 'repeat(2, minmax(0, 1fr))',
+    lg: 'repeat(4, minmax(0, 1fr))',
+  },
+  gap: 3,
+  width: '100%',
+};
+
 function Attendance() {
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(today);
@@ -44,6 +67,7 @@ function Attendance() {
   const [selectedDepartment, setSelectedDepartment] = useState('all');
   const [syncing, setSyncing] = useState(false);
   const [fixing, setFixing] = useState(false);
+  const [showMissingOnly, setShowMissingOnly] = useState(false);
   const [message, setMessage] = useState(null);
   const { devices } = useDevices({ pollingInterval: 5000 });
   const { departments } = useDepartments({ pollingInterval: 5000 });
@@ -55,6 +79,13 @@ function Attendance() {
     pollingInterval: 5000,
   });
   const missingOutCount = summary.filter((row) => row.status === 'missing-out' || !row.out).length;
+  const visibleSummary = useMemo(() => {
+    if (!showMissingOnly) {
+      return summary;
+    }
+
+    return summary.filter((row) => row.status === 'missing-out' || !row.out);
+  }, [showMissingOnly, summary]);
 
   const handleSync = async () => {
     setSyncing(true);
@@ -162,8 +193,7 @@ function Attendance() {
       {message && <Alert severity={message.severity}>{message.text}</Alert>}
       {error && <Alert severity="error">{error}</Alert>}
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={3}>
+      <Box sx={attendanceFilterGridSx}>
           <TextField
             label="From Date"
             type="date"
@@ -179,8 +209,6 @@ function Attendance() {
             fullWidth
             InputLabelProps={{ shrink: true }}
           />
-        </Grid>
-        <Grid item xs={12} md={3}>
           <TextField
             label="To Date"
             type="date"
@@ -196,8 +224,6 @@ function Attendance() {
             fullWidth
             InputLabelProps={{ shrink: true }}
           />
-        </Grid>
-        <Grid item xs={12} md={3}>
           <FormControl fullWidth>
             <InputLabel>Device</InputLabel>
             <Select
@@ -213,8 +239,6 @@ function Attendance() {
               ))}
             </Select>
           </FormControl>
-        </Grid>
-        <Grid item xs={12} md={3}>
           <FormControl fullWidth>
             <InputLabel>Department</InputLabel>
             <Select
@@ -230,10 +254,9 @@ function Attendance() {
               ))}
             </Select>
           </FormControl>
-        </Grid>
-      </Grid>
+      </Box>
 
-      <Grid container spacing={3}>
+      <Box sx={attendanceCardGridSx}>
         {[
           { label: 'Raw Events', value: logs.length, icon: <EventAvailableIcon />, color: '#2563eb' },
           { label: 'Attendance Rows', value: summary.length, icon: <BadgeIcon />, color: '#0f766e' },
@@ -243,10 +266,37 @@ function Attendance() {
             value: missingOutCount > 0 ? missingOutCount : stats.devices,
             icon: missingOutCount > 0 ? <WarningAmberIcon /> : <DevicesIcon />,
             color: missingOutCount > 0 ? '#dc2626' : '#d97706',
+            isMissingFilter: missingOutCount > 0,
           },
         ].map((card) => (
-          <Grid item xs={12} sm={6} lg={3} key={card.label}>
-            <Card>
+            <Card
+              key={card.label}
+              onClick={() => {
+                if (card.isMissingFilter) {
+                  setShowMissingOnly((current) => !current);
+                }
+              }}
+              role={card.isMissingFilter ? 'button' : undefined}
+              tabIndex={card.isMissingFilter ? 0 : undefined}
+              onKeyDown={(event) => {
+                if (card.isMissingFilter && (event.key === 'Enter' || event.key === ' ')) {
+                  event.preventDefault();
+                  setShowMissingOnly((current) => !current);
+                }
+              }}
+              sx={{
+                cursor: card.isMissingFilter ? 'pointer' : 'default',
+                borderColor: card.isMissingFilter && showMissingOnly ? 'error.main' : 'divider',
+                boxShadow: card.isMissingFilter && showMissingOnly ? '0 0 0 2px rgba(220, 38, 38, 0.2)' : undefined,
+                transition: 'border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease',
+                '&:hover': card.isMissingFilter
+                  ? {
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 10px 24px rgba(15, 23, 42, 0.12)',
+                    }
+                  : undefined,
+              }}
+            >
               <CardContent>
                 <Stack direction="row" alignItems="center" justifyContent="space-between">
                   <Box>
@@ -273,9 +323,8 @@ function Attendance() {
                 </Stack>
               </CardContent>
             </Card>
-          </Grid>
         ))}
-      </Grid>
+      </Box>
 
       <Card>
         <CardContent>
@@ -295,12 +344,26 @@ function Attendance() {
             )}
 
             {missingOutCount > 0 && (
-              <Alert severity="error" icon={<WarningAmberIcon />}>
-                {missingOutCount} attendance row{missingOutCount > 1 ? 's' : ''} missing OUT punch.
+              <Alert
+                severity="error"
+                icon={<WarningAmberIcon />}
+                action={
+                  <Button color="inherit" size="small" onClick={() => setShowMissingOnly((current) => !current)}>
+                    {showMissingOnly ? 'Show all' : 'Filter'}
+                  </Button>
+                }
+              >
+                {showMissingOnly
+                  ? `Showing ${visibleSummary.length} missing OUT row${visibleSummary.length > 1 ? 's' : ''}.`
+                  : `${missingOutCount} attendance row${missingOutCount > 1 ? 's' : ''} missing OUT punch.`}
               </Alert>
             )}
 
-            {summary.length > 0 && (
+            {summary.length > 0 && visibleSummary.length === 0 && (
+              <Alert severity="info">No rows match the selected filter.</Alert>
+            )}
+
+            {visibleSummary.length > 0 && (
               <TableContainer>
                 <Table>
                   <TableHead>
@@ -319,7 +382,7 @@ function Attendance() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {summary.map((row) => {
+                    {visibleSummary.map((row) => {
                       const isMissingOut = row.status === 'missing-out' || !row.out;
 
                       return (

@@ -14,7 +14,6 @@ import {
   Chip,
   CircularProgress,
   FormControl,
-  Grid,
   InputLabel,
   MenuItem,
   Select,
@@ -60,6 +59,29 @@ const csvColumns = [
   ['shift', 'Shift'],
   ['status', 'Status'],
 ];
+
+const reportFilterGridSx = {
+  display: 'grid',
+  gridTemplateColumns: {
+    xs: '1fr',
+    sm: 'repeat(2, minmax(0, 1fr))',
+    lg: 'repeat(6, minmax(0, 1fr))',
+  },
+  gap: 2,
+  width: '100%',
+  alignItems: 'start',
+};
+
+const reportStatsGridSx = {
+  display: 'grid',
+  gridTemplateColumns: {
+    xs: '1fr',
+    sm: 'repeat(2, minmax(0, 1fr))',
+    lg: 'repeat(4, minmax(0, 1fr))',
+  },
+  gap: 3,
+  width: '100%',
+};
 
 const getMonthRange = (value) => {
   const [year, month] = value.split('-').map(Number);
@@ -426,8 +448,8 @@ function Reports() {
 
       <Card>
         <CardContent>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={2}>
+          <Box sx={reportFilterGridSx}>
+            <Box>
               <FormControl fullWidth>
                 <InputLabel>Report Type</InputLabel>
                 <Select label="Report Type" value={mode} onChange={(event) => setMode(event.target.value)}>
@@ -436,8 +458,8 @@ function Reports() {
                   <MenuItem value="year">By year</MenuItem>
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
+            </Box>
+            <Box>
               {mode === 'day' && (
                 <TextField
                   label="Date"
@@ -468,24 +490,24 @@ function Reports() {
                   inputProps={{ min: 2000, max: 2100 }}
                 />
               )}
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
+            </Box>
+            <Box>
               <TextField
                 label="From"
                 value={reportRange.startDate}
                 fullWidth
                 InputProps={{ readOnly: true }}
               />
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
+            </Box>
+            <Box>
               <TextField
                 label="To"
                 value={reportRange.endDate}
                 fullWidth
                 InputProps={{ readOnly: true }}
               />
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
+            </Box>
+            <Box>
               <FormControl fullWidth>
                 <InputLabel>Device</InputLabel>
                 <Select
@@ -501,8 +523,8 @@ function Reports() {
                   ))}
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
+            </Box>
+            <Box>
               <FormControl fullWidth>
                 <InputLabel>Department</InputLabel>
                 <Select
@@ -518,12 +540,12 @@ function Reports() {
                   ))}
                 </Select>
               </FormControl>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </CardContent>
       </Card>
 
-      <Grid container spacing={3}>
+      <Box sx={reportStatsGridSx}>
         {[
           { label: 'Report Rows', value: stats.rows, icon: <EventAvailableIcon />, color: '#2563eb' },
           { label: 'Employees', value: stats.employees, icon: <BadgeIcon />, color: '#0f766e' },
@@ -535,8 +557,7 @@ function Reports() {
             color: stats.missingOut > 0 ? '#dc2626' : '#64748b',
           },
         ].map((card) => (
-          <Grid item xs={12} sm={6} lg={3} key={card.label}>
-            <Card>
+            <Card key={card.label}>
               <CardContent>
                 <Stack direction="row" alignItems="center" justifyContent="space-between">
                   <Box>
@@ -563,9 +584,8 @@ function Reports() {
                 </Stack>
               </CardContent>
             </Card>
-          </Grid>
         ))}
-      </Grid>
+      </Box>
 
       <Card>
         <CardContent>

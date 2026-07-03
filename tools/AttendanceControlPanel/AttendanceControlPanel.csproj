@@ -7,5 +7,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>AttendanceControlPanel</AssemblyName>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\attendance-system.ico</ApplicationIcon>
   </PropertyGroup>
 </Project>

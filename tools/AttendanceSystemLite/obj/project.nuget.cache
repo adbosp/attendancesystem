@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "yGWOKGxoaX0=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\HYVN\\Documents\\Codex\\2026-07-01\\project-attendance-management-system-basic-setup\\tools\\AttendanceSystemLite\\AttendanceSystemLite.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\HYVN\\.nuget\\packages\\microsoft.net.illink.tasks\\10.0.9\\microsoft.net.illink.tasks.10.0.9.nupkg.sha512",
+    "C:\\Users\\HYVN\\.nuget\\packages\\microsoft.web.webview2\\1.0.3537.50\\microsoft.web.webview2.1.0.3537.50.nupkg.sha512",
+    "C:\\Users\\HYVN\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\10.0.9\\microsoft.netcore.app.runtime.win-x64.10.0.9.nupkg.sha512",
+    "C:\\Users\\HYVN\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\10.0.9\\microsoft.windowsdesktop.app.runtime.win-x64.10.0.9.nupkg.sha512",
+    "C:\\Users\\HYVN\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\10.0.9\\microsoft.aspnetcore.app.runtime.win-x64.10.0.9.nupkg.sha512"
+  ],
+  "logs": []
+}

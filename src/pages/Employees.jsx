@@ -85,6 +85,19 @@ const defaultFingerprintForm = {
   note: '',
 };
 
+const employeeFormTwoColumnSx = {
+  display: 'grid',
+  gridTemplateColumns: {
+    xs: '1fr',
+    sm: 'minmax(0, 1fr) minmax(0, 1fr)',
+  },
+  gap: 2,
+  alignItems: 'start',
+  '& .MuiFormControl-root': {
+    minWidth: 0,
+  },
+};
+
 function formatDate(value) {
   if (!value) {
     return 'Never';
@@ -508,28 +521,24 @@ function Employees() {
                   </Select>
                 </FormControl>
 
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Employee Code"
-                      name="employeeCode"
-                      value={formData.employeeCode}
-                      onChange={handleChange}
-                      fullWidth
-                      required
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="UID"
-                      name="uid"
-                      type="number"
-                      value={formData.uid}
-                      onChange={handleChange}
-                      fullWidth
-                    />
-                  </Grid>
-                </Grid>
+                <Box sx={employeeFormTwoColumnSx}>
+                  <TextField
+                    label="Employee Code"
+                    name="employeeCode"
+                    value={formData.employeeCode}
+                    onChange={handleChange}
+                    fullWidth
+                    required
+                  />
+                  <TextField
+                    label="UID"
+                    name="uid"
+                    type="number"
+                    value={formData.uid}
+                    onChange={handleChange}
+                    fullWidth
+                  />
+                </Box>
 
                 <TextField
                   label="Device Name"
@@ -568,26 +577,22 @@ function Employees() {
                   </Select>
                 </FormControl>
 
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Card Number"
-                      name="cardNumber"
-                      value={formData.cardNumber}
-                      onChange={handleChange}
-                      fullWidth
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      fullWidth
-                    />
-                  </Grid>
-                </Grid>
+                <Box sx={employeeFormTwoColumnSx}>
+                  <TextField
+                    label="Card Number"
+                    name="cardNumber"
+                    value={formData.cardNumber}
+                    onChange={handleChange}
+                    fullWidth
+                  />
+                  <TextField
+                    label="Password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    fullWidth
+                  />
+                </Box>
 
                 <TextField
                   label="Role"

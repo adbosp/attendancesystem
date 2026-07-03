@@ -14,7 +14,6 @@ import {
   CircularProgress,
   FormControl,
   FormControlLabel,
-  Grid,
   IconButton,
   InputLabel,
   MenuItem,
@@ -46,6 +45,37 @@ const defaultForm = {
   departmentName: '',
   description: '',
   isActive: true,
+};
+
+const departmentStatsGridSx = {
+  display: 'grid',
+  gridTemplateColumns: {
+    xs: '1fr',
+    sm: 'repeat(3, minmax(0, 1fr))',
+  },
+  gap: 3,
+  width: '100%',
+};
+
+const departmentBulkControlsSx = {
+  display: 'grid',
+  gridTemplateColumns: {
+    xs: '1fr',
+    md: 'minmax(240px, 5fr) minmax(0, 7fr)',
+  },
+  gap: 2,
+  alignItems: 'center',
+};
+
+const departmentMainGridSx = {
+  display: 'grid',
+  gridTemplateColumns: {
+    xs: '1fr',
+    lg: 'minmax(320px, 4fr) minmax(0, 8fr)',
+  },
+  gap: 3,
+  width: '100%',
+  alignItems: 'start',
 };
 
 function Departments() {
@@ -219,8 +249,7 @@ function Departments() {
       {error && <Alert severity="error">{error}</Alert>}
       {employeesError && <Alert severity="error">{employeesError}</Alert>}
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
+      <Box sx={departmentStatsGridSx}>
           <Card>
             <CardContent>
               <Typography variant="body2" color="text.secondary">
@@ -231,8 +260,6 @@ function Departments() {
               </Typography>
             </CardContent>
           </Card>
-        </Grid>
-        <Grid item xs={12} md={4}>
           <Card>
             <CardContent>
               <Typography variant="body2" color="text.secondary">
@@ -243,8 +270,6 @@ function Departments() {
               </Typography>
             </CardContent>
           </Card>
-        </Grid>
-        <Grid item xs={12} md={4}>
           <Card>
             <CardContent>
               <Typography variant="body2" color="text.secondary">
@@ -255,8 +280,7 @@ function Departments() {
               </Typography>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+      </Box>
 
       <Card>
         <CardContent>
@@ -276,8 +300,8 @@ function Departments() {
               {(employeesLoading || bulkUpdating) && <CircularProgress size={22} />}
             </Stack>
 
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={5}>
+            <Box sx={departmentBulkControlsSx}>
+              <Box>
                 <FormControl fullWidth>
                   <InputLabel>Department</InputLabel>
                   <Select
@@ -292,8 +316,8 @@ function Departments() {
                     ))}
                   </Select>
                 </FormControl>
-              </Grid>
-              <Grid item xs={12} md={7}>
+              </Box>
+              <Box>
                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
                   <Button
                     variant="outlined"
@@ -320,8 +344,8 @@ function Departments() {
                     {bulkUpdating ? 'Updating...' : `Update Selected (${selectedEmployees.length})`}
                   </Button>
                 </Stack>
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
 
             {activeDepartments.length === 0 && (
               <Alert severity="info">Create an active department before assigning employees.</Alert>
@@ -373,8 +397,8 @@ function Departments() {
         </CardContent>
       </Card>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} lg={4}>
+      <Box sx={departmentMainGridSx}>
+        <Box>
           <Card>
             <CardContent>
               <Stack spacing={2.5} component="form" onSubmit={handleSave}>
@@ -431,9 +455,9 @@ function Departments() {
               </Stack>
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} lg={8}>
+        <Box>
           <Card>
             <CardContent>
               <Stack spacing={2}>
@@ -499,8 +523,8 @@ function Departments() {
               </Stack>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Stack>
   );
 }

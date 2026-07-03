@@ -12,6 +12,7 @@ import {
   Button,
   ButtonGroup,
   Chip,
+  CircularProgress,
   IconButton,
   List,
   ListItem,
@@ -53,7 +54,7 @@ const headerText = {
   },
 };
 
-function Header({ onMenuClick, sidebarOpen }) {
+function Header({ onMenuClick, sidebarOpen, startupSync }) {
   const navigate = useNavigate();
   const user = getStoredUser();
   const { notifications, unreadCount, markAllRead } = useNotifications();
@@ -108,6 +109,31 @@ function Header({ onMenuClick, sidebarOpen }) {
             {text.subtitle}
           </Typography>
         </Box>
+        {startupSync?.message && (
+          <Chip
+            size="small"
+            color={
+              startupSync.severity === 'success'
+                ? 'success'
+                : startupSync.severity === 'warning'
+                  ? 'warning'
+                  : startupSync.severity === 'error'
+                    ? 'error'
+                    : 'primary'
+            }
+            variant={startupSync.loading ? 'outlined' : 'filled'}
+            icon={startupSync.loading ? <CircularProgress size={14} color="inherit" /> : undefined}
+            label={startupSync.message}
+            sx={{
+              display: { xs: 'none', md: 'inline-flex' },
+              maxWidth: 260,
+              '& .MuiChip-label': {
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              },
+            }}
+          />
+        )}
         <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 0.75 }}>
           <TranslateIcon fontSize="small" color="action" />
           <ButtonGroup size="small" aria-label={text.languageLabel}>

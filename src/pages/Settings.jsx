@@ -14,7 +14,6 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
-  Grid,
   IconButton,
   InputLabel,
   MenuItem,
@@ -80,6 +79,37 @@ const ipPortFieldsSx = {
   },
   gap: 2,
   alignItems: 'start',
+};
+
+const settingsMainGridSx = {
+  display: 'grid',
+  gridTemplateColumns: {
+    xs: '1fr',
+    lg: 'minmax(360px, 5fr) minmax(0, 7fr)',
+  },
+  gap: 3,
+  width: '100%',
+  alignItems: 'start',
+};
+
+const settingsStatsGridSx = {
+  display: 'grid',
+  gridTemplateColumns: {
+    xs: '1fr',
+    sm: 'repeat(2, minmax(0, 1fr))',
+  },
+  gap: 2,
+  width: '100%',
+};
+
+const deviceMetaGridSx = {
+  display: 'grid',
+  gridTemplateColumns: {
+    xs: '1fr',
+    sm: 'repeat(3, minmax(0, 1fr))',
+  },
+  gap: 2,
+  width: '100%',
 };
 
 function Settings() {
@@ -213,8 +243,8 @@ function Settings() {
       {message && <Alert severity={message.severity}>{message.text}</Alert>}
       {error && <Alert severity="error">{error}</Alert>}
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} lg={5}>
+      <Box sx={settingsMainGridSx}>
+        <Box>
           <Stack spacing={3}>
             <Card>
               <CardContent>
@@ -432,12 +462,11 @@ function Settings() {
               </CardContent>
             </Card>
           </Stack>
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} lg={7}>
+        <Box>
           <Stack spacing={3}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+            <Box sx={settingsStatsGridSx}>
                 <Card>
                   <CardContent>
                     <Typography variant="body2" color="text.secondary">
@@ -448,8 +477,6 @@ function Settings() {
                     </Typography>
                   </CardContent>
                 </Card>
-              </Grid>
-              <Grid item xs={12} sm={6}>
                 <Card>
                   <CardContent>
                     <Typography variant="body2" color="text.secondary">
@@ -460,8 +487,7 @@ function Settings() {
                     </Typography>
                   </CardContent>
                 </Card>
-              </Grid>
-            </Grid>
+            </Box>
 
             <Card>
               <CardContent>
@@ -532,26 +558,26 @@ function Settings() {
                               </Stack>
                             </Stack>
 
-                            <Grid container spacing={2}>
-                              <Grid item xs={12} sm={4}>
+                            <Box sx={deviceMetaGridSx}>
+                              <Box>
                                 <Typography variant="caption" color="text.secondary">
                                   Protocol
                                 </Typography>
                                 <Typography variant="body2">{device.protocol}</Typography>
-                              </Grid>
-                              <Grid item xs={12} sm={4}>
+                              </Box>
+                              <Box>
                                 <Typography variant="caption" color="text.secondary">
                                   Comm Key
                                 </Typography>
                                 <Typography variant="body2">{device.commKey || '0'}</Typography>
-                              </Grid>
-                              <Grid item xs={12} sm={4}>
+                              </Box>
+                              <Box>
                                 <Typography variant="caption" color="text.secondary">
                                   Location
                                 </Typography>
                                 <Typography variant="body2">{device.location || 'Not set'}</Typography>
-                              </Grid>
-                            </Grid>
+                              </Box>
+                            </Box>
 
                             {device.lastConnectionMessage && (
                               <Typography variant="body2" color="text.secondary">
@@ -594,8 +620,8 @@ function Settings() {
               </CardContent>
             </Card>
           </Stack>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Stack>
   );
 }

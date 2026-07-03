@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AttendanceControlPanel")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+af401e669a1e618363f2c37c831166e7202f3a47")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b145765ca05f285e94a528fcc2ce4730233e0be9")]
 [assembly: System.Reflection.AssemblyProductAttribute("AttendanceControlPanel")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AttendanceControlPanel")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

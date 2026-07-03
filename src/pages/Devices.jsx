@@ -11,7 +11,6 @@ import {
   CardContent,
   CircularProgress,
   Divider,
-  Grid,
   Stack,
   Typography,
 } from '@mui/material';
@@ -31,6 +30,28 @@ const summaryCards = [
   },
   { key: 'failed', label: 'Failed', icon: <WarningAmberIcon />, color: '#dc2626' },
 ];
+
+const deviceSummaryGridSx = {
+  display: 'grid',
+  gridTemplateColumns: {
+    xs: '1fr',
+    sm: 'repeat(2, minmax(0, 1fr))',
+    lg: 'repeat(4, minmax(0, 1fr))',
+  },
+  gap: 3,
+  width: '100%',
+};
+
+const deviceRowGridSx = {
+  display: 'grid',
+  gridTemplateColumns: {
+    xs: '1fr',
+    sm: 'repeat(2, minmax(0, 1fr))',
+    md: 'minmax(220px, 2fr) minmax(120px, 1fr) minmax(110px, 0.8fr) minmax(120px, 0.9fr) minmax(120px, 0.9fr)',
+  },
+  gap: 2,
+  alignItems: 'center',
+};
 
 function Devices() {
   const { devices, loading, error, stats, refreshDevices } = useDevices({ pollingInterval: 5000 });
@@ -84,10 +105,9 @@ function Devices() {
       {message && <Alert severity={message.severity}>{message.text}</Alert>}
       {error && <Alert severity="error">{error}</Alert>}
 
-      <Grid container spacing={3}>
+      <Box sx={deviceSummaryGridSx}>
         {summaryCards.map((card) => (
-          <Grid item xs={12} sm={6} lg={3} key={card.key}>
-            <Card sx={{ height: '100%' }}>
+            <Card key={card.key} sx={{ height: '100%' }}>
               <CardContent>
                 <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
                   <Box>
@@ -114,9 +134,8 @@ function Devices() {
                 </Stack>
               </CardContent>
             </Card>
-          </Grid>
         ))}
-      </Grid>
+      </Box>
 
       <Card>
         <CardContent>
@@ -152,8 +171,8 @@ function Devices() {
                   sx={{ boxShadow: 'none', borderColor: 'divider' }}
                 >
                   <CardContent>
-                    <Grid container spacing={2} alignItems="center">
-                      <Grid item xs={12} md={4}>
+                    <Box sx={deviceRowGridSx}>
+                      <Box>
                         <Stack direction="row" alignItems="center" spacing={1.5}>
                           <Box
                             sx={{
@@ -177,34 +196,34 @@ function Devices() {
                             </Typography>
                           </Box>
                         </Stack>
-                      </Grid>
+                      </Box>
 
-                      <Grid item xs={12} sm={6} md={2}>
+                      <Box>
                         <Typography variant="caption" color="text.secondary">
                           Network
                         </Typography>
                         <Typography variant="body2">
                           {device.ipAddress}:{device.port}
                         </Typography>
-                      </Grid>
+                      </Box>
 
-                      <Grid item xs={12} sm={6} md={2}>
+                      <Box>
                         <Typography variant="caption" color="text.secondary">
                           Protocol
                         </Typography>
                         <Typography variant="body2">{device.protocol}</Typography>
-                      </Grid>
+                      </Box>
 
-                      <Grid item xs={12} sm={6} md={2}>
+                      <Box>
                         <Typography variant="caption" color="text.secondary">
                           Status
                         </Typography>
                         <Box sx={{ mt: 0.5 }}>
                           <DeviceStatusChip status={device.lastConnectionStatus} />
                         </Box>
-                      </Grid>
+                      </Box>
 
-                      <Grid item xs={12} sm={6} md={2}>
+                      <Box>
                         <Button
                           variant="contained"
                           onClick={() => handleTestConnection(device._id)}
@@ -213,10 +232,10 @@ function Devices() {
                         >
                           {testingId === device._id ? 'Testing...' : 'Test'}
                         </Button>
-                      </Grid>
+                      </Box>
 
                       {(device.location || device.lastConnectionMessage) && (
-                        <Grid item xs={12}>
+                        <Box sx={{ gridColumn: '1 / -1' }}>
                           <Divider sx={{ mb: 1 }} />
                           <Typography variant="body2" color="text.secondary">
                             {device.location ? `Location: ${device.location}` : ''}
@@ -225,9 +244,9 @@ function Devices() {
                               ? `Last test: ${device.lastConnectionMessage}`
                               : ''}
                           </Typography>
-                        </Grid>
+                        </Box>
                       )}
-                    </Grid>
+                    </Box>
                   </CardContent>
                 </Card>
               ))}

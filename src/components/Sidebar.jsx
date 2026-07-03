@@ -77,15 +77,6 @@ function SidebarContent({ onClose }) {
           </ListItem>
         ))}
       </List>
-      <Box sx={{ mt: 'auto', px: 3, py: 2 }}>
-        <Divider sx={{ mb: 2 }} />
-        <Typography variant="caption" color="text.secondary" display="block">
-          System Info
-        </Typography>
-        <Typography variant="body2" fontWeight={700} color="primary.main">
-          Create by Truong-IT
-        </Typography>
-      </Box>
     </Box>
   );
 }

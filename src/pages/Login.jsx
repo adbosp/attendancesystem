@@ -1,24 +1,26 @@
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Alert, Box, Button, Paper, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Checkbox, FormControlLabel, Paper, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { loginAdmin } from '../api/api.js';
-import { getStoredUser, storeUser } from '../auth/auth.js';
+import {
+  clearRememberedLogin,
+  getRememberedLogin,
+  saveRememberedLogin,
+  storeUser,
+} from '../auth/auth.js';
 
 function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const storedUser = getStoredUser();
+  const rememberedLogin = getRememberedLogin();
   const [formData, setFormData] = useState({
-    account: 'admin',
-    password: 'admin',
+    account: rememberedLogin?.account || '',
+    password: rememberedLogin?.password || '',
   });
+  const [rememberPassword, setRememberPassword] = useState(Boolean(rememberedLogin?.password));
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  if (storedUser) {
-    return <Navigate to="/" replace />;
-  }
 
   const redirectPath = location.state?.from?.pathname || '/';
 
@@ -38,6 +40,13 @@ function Login() {
     try {
       const data = await loginAdmin(formData);
       storeUser(data.user);
+
+      if (rememberPassword) {
+        saveRememberedLogin(formData);
+      } else {
+        clearRememberedLogin();
+      }
+
       navigate(redirectPath, { replace: true });
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Cannot login. Please check the server.');
@@ -108,6 +117,15 @@ function Login() {
               onChange={handleChange}
               fullWidth
               required
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={rememberPassword}
+                  onChange={(event) => setRememberPassword(event.target.checked)}
+                />
+              }
+              label="Remember account and password"
             />
             <Button variant="contained" size="large" type="submit" disabled={loading}>
               {loading ? 'Signing in...' : 'Sign in'}
